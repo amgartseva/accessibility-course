@@ -5,10 +5,12 @@ const del = require('del');
 const rename = require('gulp-rename');
 const less = require('gulp-less');
 const imagemin = require('gulp-imagemin');
-sass.compiler = require('node-sass');
 const browserSync = require('browser-sync').create();
 const svgSprite = require('gulp-svg-sprite');
 const plumber = require('gulp-plumber');
+const cleanCSS = require('gulp-clean-css');
+const imageminMozjpeg = require('imagemin-mozjpeg');
+const uglify = require('gulp-uglify');
 
 const html = () => {
   return gulp.src('src/html/*.html')
@@ -30,27 +32,18 @@ exports.fonts = fonts;
 const styles = () => {
   return gulp
     .src('./src/less/style.less')
-    .pipe(
-      autoprefixer({
-        cascade: false
-      })
-    )
-    .pipe(
-      less
-        .sync()
-        .on('error', less.logError)
-    )
-    .pipe(gulp.dest('./build/css'))
-    .pipe(
-      less
-        .sync({
-          outputStyle: 'compressed'
+      .pipe(plumber())
+      .pipe(less())
+      .pipe(
+        autoprefixer({
+            cascade: false
         })
-        .on('error', less.logError)
-    )
-    .pipe(rename('style.min.css'))
-    .pipe(gulp.dest('./build/css'))
-    .pipe(browserSync.stream());
+      )
+      .pipe(gulp.dest('./build/css'))
+      .pipe(cleanCSS())
+      .pipe(rename('style.min.css'))
+      .pipe(gulp.dest('./build/css'))
+      .pipe(browserSync.stream());
 }
 
 exports.styles = styles;
@@ -82,7 +75,7 @@ exports.svg_sprite = svg_sprite;
 
 const images = () => {
     return gulp
-        .src('./src/img/*.{png,jpg}')
+        .src('./src/img/*.{png,jpg,jpeg}')
         .pipe(imagemin([
             imagemin.optipng({
                 optimizationLevel: 3
@@ -121,7 +114,7 @@ const watch = () => {
     }
   });
 
-    gulp.watch('./src/scss/**/*.scss', styles);
+    gulp.watch('./src/less/**/*.less', styles);
     gulp.watch('./src/fonts/**/*.{ttf,woff,woff2,svg,eot}', fonts);
     gulp.watch('./src/svg/*.svg', svg_sprite);
     gulp.watch('./src/img/*.{png,jpg}', images);
