@@ -355,7 +355,7 @@ img {
   transform: translateY(-50%);
   margin-top: 0;
   background-color: #FFFFFF;
-  background-image: url("/svg/arrow.svg");
+  background-image: url("../svg/arrow.svg");
   background-size: 50%;
   background-position: center;
   background-repeat: no-repeat;
